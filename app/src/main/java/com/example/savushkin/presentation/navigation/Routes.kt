@@ -7,7 +7,7 @@ sealed class Routes(val route : String) {
     data object RequestPage : Routes(route = ROUTE_REQUEST_PAGE)
     data object DirectoryPage : Routes(route = ROUTE_DIRECTORY_PAGE)
 
-    companion object {
+    private companion object {
         const val ROUTE_AUTHORIZATION_PAGE = "AuthorizationPage"
         const val ROUTE_ALL_REQUESTS_PAGE = "AllRequestsPage"
         const val ROUTE_REQUEST_PAGE = "RequestPage"

@@ -33,10 +33,20 @@ fun Content(vm : MainViewModel = viewModel()) {
         startDestination = Routes.AuthorizationPage.route
     ) {
         composable(Routes.AuthorizationPage.route) {
-            AuthorizationPage(vm = vm)
+            AuthorizationPage(
+                vm = vm,
+                navigateToAllRequestsPage = {
+                    navigationState.navigateTo(Routes.AllRequestsPage.route)
+                }
+            )
         }
         composable(Routes.AllRequestsPage.route) {
-            AllRequestsPage(vm = vm)
+            AllRequestsPage(
+                vm = vm,
+                navigateToRequestPage = {
+                    navigationState.navigateTo(Routes.RequestPage.route)
+                }
+            )
         }
         composable(Routes.RequestPage.route) {
             RequestPage(vm = vm)
