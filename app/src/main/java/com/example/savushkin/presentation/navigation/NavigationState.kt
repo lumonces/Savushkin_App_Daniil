@@ -10,7 +10,7 @@ class NavigationState(val navHostController: NavHostController) {
 
     fun navigateTo(route : String) {
         navHostController.navigate(route) {
-            popUpTo(navHostController.graph[Routes.AuthorizationPage.route].id) {
+            popUpTo(navHostController.graph[Routes.AllRequestsPage.route].id) {
                 saveState = true
             }
             restoreState = true

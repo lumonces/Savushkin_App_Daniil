@@ -85,7 +85,7 @@ fun AuthorizationPage(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
                         .height(60.dp),
-                    onClick = {  },
+                    onClick = { navigateToAllRequestsPage() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF0088EB),
                         contentColor = Color.White

@@ -1,4 +1,4 @@
-package com.example.savushkin.presentation.request
+package com.example.savushkin.presentation.requestPage
 
 import androidx.compose.runtime.Composable
 import com.example.savushkin.presentation.MainViewModel

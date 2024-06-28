@@ -13,7 +13,7 @@ import com.example.savushkin.presentation.authorizationPage.AuthorizationPage
 import com.example.savushkin.presentation.directoryPage.DirectoryPage
 import com.example.savushkin.presentation.navigation.Routes
 import com.example.savushkin.presentation.navigation.rememberNavigationState
-import com.example.savushkin.presentation.request.RequestPage
+import com.example.savushkin.presentation.requestPage.RequestPage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +45,9 @@ fun Content(vm : MainViewModel = viewModel()) {
                 vm = vm,
                 navigateToRequestPage = {
                     navigationState.navigateTo(Routes.RequestPage.route)
+                },
+                navigateToDirectoryPage = {
+                    navigationState.navigateTo(Routes.DirectoryPage.route)
                 }
             )
         }
