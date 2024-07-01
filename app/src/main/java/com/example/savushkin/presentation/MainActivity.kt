@@ -1,5 +1,6 @@
 package com.example.savushkin.presentation
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,13 +21,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Content()
+            Content(context = this)
         }
     }
 }
 
 @Composable
-fun Content(vm : MainViewModel = viewModel()) {
+fun Content(vm : MainViewModel = viewModel(), context : Context) {
     val navigationState = rememberNavigationState()
     NavHost(
         navController = navigationState.navHostController,
@@ -37,7 +38,8 @@ fun Content(vm : MainViewModel = viewModel()) {
                 vm = vm,
                 navigateToAllRequestsPage = {
                     navigationState.navigateTo(Routes.AllRequestsPage.route)
-                }
+                },
+                context = context
             )
         }
         composable(Routes.AllRequestsPage.route) {

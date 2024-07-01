@@ -22,4 +22,18 @@ interface MyRepository {
     fun getAllProductByRequest(numberRequest : Long) : LiveData<List<ProductOfRequest>>
 
     fun getAllProductOfDirectory() : LiveData<List<Directory>>
+
+    fun loadRequestFromXML()
+
+    fun getLogin() : String
+
+    fun getCorrectLogin() : String
+
+    fun getPassword() : String
+
+    fun getCorrectPassword() : String
+
+    fun getStatusRememberEnter() : Boolean
+
+    fun setStatusRememberEnter(newStatus : Boolean)
 }

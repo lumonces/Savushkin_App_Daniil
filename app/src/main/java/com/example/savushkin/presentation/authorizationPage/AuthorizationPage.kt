@@ -1,5 +1,8 @@
 package com.example.savushkin.presentation.authorizationPage
 
+import android.content.Context
+import android.view.Gravity
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +32,7 @@ import com.example.savushkin.presentation.MainViewModel
 
 @Composable
 fun AuthorizationPage(
+    context : Context,
     vm : MainViewModel,
     navigateToAllRequestsPage : () -> Unit
 ) {
@@ -46,8 +50,8 @@ fun AuthorizationPage(
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 TextField(
-                    value = "",
-                    onValueChange = {  },
+                    value = vm.getLogin(),
+                    onValueChange = { vm.setLogin(it) },
                     placeholder = { Text(text = "Login", fontSize = 22.sp, color = Color.Gray) },
                     shape = RoundedCornerShape(15.dp),
                     colors = TextFieldDefaults.colors(
@@ -63,8 +67,8 @@ fun AuthorizationPage(
                 )
 
                 TextField(
-                    value = "",
-                    onValueChange = {},
+                    value = vm.getPassword(),
+                    onValueChange = { vm.setPassword(it) },
                     placeholder = { Text(text = "Password", fontSize = 22.sp, color = Color.Gray) },
                     shape = RoundedCornerShape(15.dp),
                     colors = TextFieldDefaults.colors(
@@ -85,7 +89,11 @@ fun AuthorizationPage(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
                         .height(60.dp),
-                    onClick = { navigateToAllRequestsPage() },
+                    onClick = {
+                        val toast = Toast.makeText(context, "Введён неверный Логин и/или Пароль", Toast.LENGTH_SHORT)
+                        toast.setGravity(Gravity.BOTTOM, 0, 0)
+                        vm.checkAuth(navigateToAllRequestsPage, toast)
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF0088EB),
                         contentColor = Color.White
@@ -102,8 +110,8 @@ fun AuthorizationPage(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {  }
+                        checked = vm.getStatusRememberEnter(),
+                        onCheckedChange = { vm.setStatusRememberEnter(it) }
                     )
                     Text(text = "Запомнить", fontSize = 20.sp)
                 }
