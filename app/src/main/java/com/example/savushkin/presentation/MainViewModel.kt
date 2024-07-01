@@ -9,6 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
+
+
     private var stateNumberRequest by mutableLongStateOf(0)
     private var stateDateRequest by mutableStateOf("")
     private var stateNameShopRequest by mutableStateOf("")
