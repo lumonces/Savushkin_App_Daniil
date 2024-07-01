@@ -1,4 +1,4 @@
-package com.example.savushkin.presentation.allRequestsPage
+package com.example.savushkin.presentation.directoryPage
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
@@ -8,15 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ContentForAllRequestsPage(navigateToRequestPage : () -> Unit) {
+fun ContentForDirectoryPage() {
     LazyColumn(
         modifier = Modifier
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // ЗДЕСЬ БУДУ ПОЛУЧАТЬ СПИСОК ВСЕХ ЗАЯВОК И ВЫВОДИТЬ НИЖЕ
+        // ЗДЕСЬ БУДУ ПОЛУЧАТЬ ВСЕ КОДЫ ПРОДУКТОВ ДЛЯ СПРАВОЧНИКА И ВЫВОДИТЬ НИЖЕ
         items(10) {
-            AddNewRequest(navigateToRequestPage)
+            AddProductForDirectory()
         }
     }
 }

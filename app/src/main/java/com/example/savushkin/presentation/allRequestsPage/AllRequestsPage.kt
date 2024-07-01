@@ -93,7 +93,7 @@ fun AllRequestsPage(
                 .padding(innerPadding),
             color = Color(0xFFE6E6E6)
         ) {
-            ContentForAllRequestsPage()
+            ContentForAllRequestsPage(navigateToRequestPage = navigateToRequestPage)
         }
 
     }
