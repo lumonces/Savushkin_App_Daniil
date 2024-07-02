@@ -11,15 +11,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.savushkin.data.MyRoom
 import com.example.savushkin.data.repository.MyRepositoryImpl
-import com.example.savushkin.domain.XMLObject
 import com.example.savushkin.domain.XMLParser
 import com.example.savushkin.domain.models.Directory
 import com.example.savushkin.domain.models.Request
+import com.example.savushkin.domain.usecases.AddProductInDirectoryUseCase
+import com.example.savushkin.domain.usecases.AddRequestUseCase
 import com.example.savushkin.domain.usecases.CheckAuthUseCase
 import com.example.savushkin.domain.usecases.GetAllRequestsUseCase
 import com.example.savushkin.domain.usecases.GetCorrectLoginUseCase
 import com.example.savushkin.domain.usecases.GetCorrectPasswordUseCase
 import com.example.savushkin.domain.usecases.GetCountInDirectoryUseCase
+import com.example.savushkin.domain.usecases.GetCountRequestUseCase
 import com.example.savushkin.domain.usecases.GetProductsOfDirectoryUseCase
 import com.example.savushkin.domain.usecases.GetStatusRememberEnterUseCase
 import com.example.savushkin.domain.usecases.SetStatusRememberEnterUseCase
@@ -39,10 +41,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // СОСТОЯНИЯ ЗАЯВКИ
     private var stateNumberRequest by mutableLongStateOf(0)
-    private var stateDateRequest by mutableStateOf("")
-    private var stateNameShopRequest by mutableStateOf("")
-    private var stateAddressShopRequest by mutableStateOf("")
-    private var stateStatusRequest by mutableStateOf("")
 
     // USECASE-ы
     private val checkAuthUseCase: CheckAuthUseCase
@@ -53,6 +51,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val getCountInDirectoryUseCase: GetCountInDirectoryUseCase
     private val getAllRequestsUseCase: GetAllRequestsUseCase
     private val getProductsOfDirectoryUseCase: GetProductsOfDirectoryUseCase
+    private val addRequestsUseCase: AddRequestUseCase
+    private val getCountRequestUseCase: GetCountRequestUseCase
+    private val addProductInDirectoryUseCase: AddProductInDirectoryUseCase
 
     init {
         val myDao = MyRoom.getDataBase(application).Dao()
@@ -69,6 +70,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getCountInDirectoryUseCase = GetCountInDirectoryUseCase(myRep = myRep)
         getAllRequestsUseCase = GetAllRequestsUseCase(myRep = myRep)
         getProductsOfDirectoryUseCase = GetProductsOfDirectoryUseCase(myRep = myRep)
+        addRequestsUseCase = AddRequestUseCase(myRep = myRep)
+        getCountRequestUseCase = GetCountRequestUseCase(myRep = myRep)
+        addProductInDirectoryUseCase = AddProductInDirectoryUseCase(myRep = myRep)
+
 
         if(getStatusRememberEnterUseCase.execute()) {
             stateLogin = getCorrectLoginUseCase.execute()
@@ -78,21 +83,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         runBlocking {
             if(getCountInDirectoryUseCase.execute() == 0) {
-                loadDataInDirectory()
+                loadDirectory()
             }
 
-
+            if(getCountRequestUseCase.execute() == 0) {
+                loadRequests()
+            }
         }
 
         requestsList = getAllRequestsUseCase.execute()
         directoryList = getProductsOfDirectoryUseCase.execute()
     }
 
-    private fun loadDataInDirectory() {
+    private fun loadDirectory() {
         viewModelScope.launch {
             val directoryList = getDirectoryFromXML()
             directoryList.forEach {
-                myRep.addProductInDirectory(it)
+                addProductInDirectoryUseCase.execute(it)
             }
         }
     }
@@ -107,7 +114,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         xmlObject.descendants?.forEach { directoryObject ->
             if (directoryObject.tag == "NS_MC") {
                 val codeProduct = directoryObject.get("KMC")?.value ?: ""
-                val gradus = (directoryObject.get("GRADUS")?.value ?: "")
+                val gradus = directoryObject.get("GRADUS")?.value ?: ""
                 val nameProduct = directoryObject.get("SNM")?.value ?: ""
                 val ean13 = directoryObject.get("EAN13")?.value ?: ""
                 directoryList.add(Directory(
@@ -121,24 +128,47 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return directoryList
     }
 
-    private fun getAllDirectoryObjects(xmlObject: XMLObject, tagName : String) : List<Directory> {
-        val directoryList = ArrayList<Directory>()
+    private fun loadRequests() {
+        viewModelScope.launch {
+            val requestsList = getRequestsFromXML()
+            requestsList.forEach{
+                addRequestsUseCase.execute(it)
+            }
+        }
+    }
 
-        xmlObject.descendants?.forEach { directoryObject ->
-            if (directoryObject.tag == tagName) {
-                val codeProduct = directoryObject.get("KMC")?.value ?: ""
-                val gradus = (directoryObject.get("GRADUS")?.value ?: "")
-                val nameProduct = directoryObject.get("SNM")?.value ?: ""
-                val ean13 = directoryObject.get("EAN13")?.value ?: ""
-                directoryList.add(Directory(
-                    codeProduct = codeProduct,
-                    nameProduct = nameProduct,
-                    temperature = gradus,
-                    ean13 = ean13
+    private fun getRequestsFromXML() : List<Request> {
+        val xmlFile = "requests.xml"
+        val assetManager = getApplication<Application>().assets
+        val inputStream = assetManager.open(xmlFile)
+        val xmlObject = XMLParser.parse(inputStream)
+        val requestsList = ArrayList<Request>()
+
+        xmlObject.descendants?.forEach { requestObject ->
+            if (requestObject.tag == "ZPL") {
+                val numberRequest = (requestObject.get("SYSN")?.value ?: "").toLong()
+                val date = (requestObject.get("DT")?.value ?: "").formatDate()
+                val nameShop = requestObject.get("NAMESHOP")?.value ?: ""
+                println(nameShop)
+                val address = requestObject.get("ADDRESS")?.value ?: ""
+                requestsList.add(Request(
+                    numberRequest = numberRequest,
+                    dateRequest = date,
+                    nameShop = nameShop,
+                    addressShop = address,
+                    statusRequest = "НОВАЯ"
                 ))
             }
         }
-        return directoryList
+        return requestsList
+    }
+
+    private fun String.formatDate(): String {
+        return if (this.length == 8) {
+            "${this.substring(0, 2)}.${this.substring(2, 4)}.${this.substring(4, 8)}"
+        } else {
+            this
+        }
     }
 
     fun checkAuth(navigateToAllRequestsPage : () -> Unit, toast : Toast) {
@@ -155,22 +185,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return stateNumberRequest
     }
 
-    fun getDateRequest() : String {
-        return stateDateRequest
-    }
-
-    fun getNameShopRequest() : String {
-        return stateNameShopRequest
-    }
-
-    fun getAddressShopRequest() : String {
-        return stateAddressShopRequest
-    }
-
-    fun getStatusRequest() : String {
-        return stateStatusRequest
-    }
-
     fun getLogin() : String {
         return stateLogin
     }
@@ -185,22 +199,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setNumberRequest(newNumberRequest : Long) {
         stateNumberRequest = newNumberRequest
-    }
-
-    fun setDateRequest(newDateRequest : String) {
-        stateDateRequest = newDateRequest
-    }
-
-    fun setNameShopRequest(newNameShopRequest : String) {
-        stateNameShopRequest = newNameShopRequest
-    }
-
-    fun setAddressShopRequest(newAddressShopRequest : String) {
-        stateAddressShopRequest = newAddressShopRequest
-    }
-
-    fun setStatusRequest(newStatusRequest : String) {
-        stateStatusRequest = newStatusRequest
     }
 
     fun setLogin(newLogin : String) {

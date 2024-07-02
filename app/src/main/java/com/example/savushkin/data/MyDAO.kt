@@ -35,4 +35,7 @@ interface MyDAO {
 
     @Query("SELECT COUNT(*) FROM Directory")
     suspend fun getCountInDirectory() : Int
+
+    @Query("SELECT COUNT(*) FROM Request")
+    suspend fun getCountRequests() : Int
 }

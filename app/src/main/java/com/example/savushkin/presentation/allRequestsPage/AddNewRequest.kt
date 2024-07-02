@@ -19,15 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.savushkin.domain.models.Request
+import com.example.savushkin.presentation.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewRequest(navigateToRequestPage : () -> Unit) {
+fun AddNewRequest(navigateToRequestPage : () -> Unit, vm : MainViewModel, request : Request) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
         onClick = {
+            vm.setNumberRequest(request.numberRequest)
             navigateToRequestPage()
         }
     ) {
@@ -38,16 +41,16 @@ fun AddNewRequest(navigateToRequestPage : () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "№12345", fontSize = 18.sp)
-                Text(text = "26.04.2024", fontSize = 18.sp)
+                Text(text = "№${request.numberRequest}", fontSize = 18.sp)
+                Text(text = request.dateRequest, fontSize = 18.sp)
             }
-            Text(text = "Название: Корона", fontSize = 18.sp)
-            Text(text = "Адрес: г. Брест, Московская 267", fontSize = 18.sp)
+            Text(text = "Название: ${request.nameShop}", fontSize = 18.sp)
+            Text(text = "Адрес: ${request.addressShop}", fontSize = 18.sp)
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Text(text = "Новая", color = Color.Red, fontSize = 20.sp)
+                Text(text = request.statusRequest, color = Color.Red, fontSize = 20.sp)
             }
         }
 

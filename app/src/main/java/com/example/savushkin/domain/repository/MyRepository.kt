@@ -25,8 +25,6 @@ interface MyRepository {
 
     fun getAllProductOfDirectory() : LiveData<List<Directory>>
 
-    fun loadRequestFromXML()
-
     fun getLogin() : String
 
     fun getCorrectLogin() : String
@@ -40,4 +38,6 @@ interface MyRepository {
     fun setStatusRememberEnter(newStatus : Boolean)
 
     suspend fun getCountInDirectory() : Int
+
+    suspend fun getCountRequests() : Int
 }

@@ -85,10 +85,6 @@ class MyRepositoryImpl (
         }
     }
 
-    override fun loadRequestFromXML() {
-
-    }
-
     override fun getLogin(): String {
         return sharedPrefs.getString(KEY_LOGIN, "") ?: ""
     }
@@ -120,6 +116,10 @@ class MyRepositoryImpl (
 
     override suspend fun getCountInDirectory(): Int {
         return myDAO.getCountInDirectory()
+    }
+
+    override suspend fun getCountRequests(): Int {
+        return myDAO.getCountRequests()
     }
 
     override suspend fun addProductInDirectory(product: Directory) {
