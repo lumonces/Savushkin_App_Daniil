@@ -117,4 +117,12 @@ class MyRepositoryImpl (
     override fun getCorrectPassword(): String {
         return sharedPrefs.getString(KEY_PASSWORD, "") ?: ""
     }
+
+    override suspend fun getCountInDirectory(): Int {
+        return myDAO.getCountInDirectory()
+    }
+
+    override suspend fun addProductInDirectory(product: Directory) {
+        myDAO.addProductInDirectory(product.toData())
+    }
 }

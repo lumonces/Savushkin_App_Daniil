@@ -9,6 +9,8 @@ interface MyRepository {
 
     suspend fun addRequest(request : Request)
 
+    suspend fun addProductInDirectory(product : Directory)
+
     fun getAllRequests() : LiveData<List<Request>>
 
     suspend fun getRequestByNumber(numberRequest: Long) : Request
@@ -36,4 +38,6 @@ interface MyRepository {
     fun getStatusRememberEnter() : Boolean
 
     fun setStatusRememberEnter(newStatus : Boolean)
+
+    suspend fun getCountInDirectory() : Int
 }

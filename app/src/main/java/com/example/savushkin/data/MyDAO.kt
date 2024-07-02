@@ -10,6 +10,9 @@ interface MyDAO {
     @Insert
     suspend fun addRequest(request : RequestEntity)
 
+    @Insert
+    suspend fun addProductInDirectory(product : DirectoryEntity)
+
     @Query("SELECT * FROM Request")
     fun getAllRequests() : LiveData<List<RequestEntity>>
     @Query("SELECT * FROM Request WHERE numberRequest = :numberRequest")
@@ -29,4 +32,7 @@ interface MyDAO {
 
     @Query("SELECT * FROM Directory")
     fun getAllProductOfDirectory() : LiveData<List<DirectoryEntity>>
+
+    @Query("SELECT COUNT(*) FROM Directory")
+    suspend fun getCountInDirectory() : Int
 }

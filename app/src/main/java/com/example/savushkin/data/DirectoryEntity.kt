@@ -8,6 +8,6 @@ data class DirectoryEntity(
     @PrimaryKey
     var codeProduct: String = "0",
     var nameProduct: String = "",
-    var temperature: Double = 0.0,
+    var temperature: String = "",
     var ean13: String = ""
 )

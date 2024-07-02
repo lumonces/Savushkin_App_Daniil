@@ -67,7 +67,7 @@ fun DirectoryPage(vm : MainViewModel) {
                 .padding(innerPadding),
             color = Color(0xFFE6E6E6)
         ) {
-            ContentForDirectoryPage()
+            ContentForDirectoryPage(vm = vm)
         }
 
     }
