@@ -9,6 +9,6 @@ import androidx.room.PrimaryKey
 )
 data class ProductOfRequestEntity(
     var codeProduct : String,
-    var quantity : Double,
+    var quantity : Int,
     var numberRequest : Long
 )

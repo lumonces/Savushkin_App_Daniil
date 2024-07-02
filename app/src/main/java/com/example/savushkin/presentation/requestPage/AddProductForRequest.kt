@@ -22,10 +22,12 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.savushkin.R
+import com.example.savushkin.domain.models.ProductOfRequest
+import com.example.savushkin.presentation.MainViewModel
 
 @Composable
-fun AddProductForRequest() {
-    // ЗДЕСЬ Я БУДУ ПОЛУЧАТЬ ОБЪЕКТ ПРОДУКТА ДЛЯ ЗАЯВКИ И ВЫВОДИТЬ ИНФОРМАЦИЮ НИЖЕ
+fun AddProductForRequest(product : ProductOfRequest, vm : MainViewModel) {
+    val productOfDirectory = vm.getProductOfDirectoryByCode(product.codeProduct)
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -37,13 +39,13 @@ fun AddProductForRequest() {
             modifier = Modifier.padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val count = 3
             Column (
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = "Код: 010101", fontSize = 18.sp)
-                Text(text = "Название: Молоко", fontSize = 18.sp)
-                Text(text = "Количество: $count", fontSize = 18.sp)
+                Text(text = "Код: ${product.codeProduct}", fontSize = 18.sp)
+                Text(text = "Название: ${productOfDirectory[0].nameProduct}", fontSize = 18.sp)
+                Text(text = "Количество: ${product.quantity}", fontSize = 18.sp)
+                Text(text = "EAN13: ${productOfDirectory[0].ean13}", fontSize = 18.sp)
             }
 
             Box(
@@ -55,7 +57,7 @@ fun AddProductForRequest() {
                         .clip(CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    if(count == 0) {
+                    if(product.quantity == 0) {
                         Image(
                             bitmap = ImageBitmap.imageResource(R.drawable.mark),
                             contentDescription = "mark",

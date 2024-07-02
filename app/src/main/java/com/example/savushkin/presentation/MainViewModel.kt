@@ -13,16 +13,22 @@ import com.example.savushkin.data.MyRoom
 import com.example.savushkin.data.repository.MyRepositoryImpl
 import com.example.savushkin.domain.XMLParser
 import com.example.savushkin.domain.models.Directory
+import com.example.savushkin.domain.models.ProductOfRequest
 import com.example.savushkin.domain.models.Request
 import com.example.savushkin.domain.usecases.AddProductInDirectoryUseCase
+import com.example.savushkin.domain.usecases.AddProductOfRequestUseCase
 import com.example.savushkin.domain.usecases.AddRequestUseCase
 import com.example.savushkin.domain.usecases.CheckAuthUseCase
 import com.example.savushkin.domain.usecases.GetAllRequestsUseCase
 import com.example.savushkin.domain.usecases.GetCorrectLoginUseCase
 import com.example.savushkin.domain.usecases.GetCorrectPasswordUseCase
 import com.example.savushkin.domain.usecases.GetCountInDirectoryUseCase
+import com.example.savushkin.domain.usecases.GetCountProductsOfRequestsUseCase
 import com.example.savushkin.domain.usecases.GetCountRequestUseCase
+import com.example.savushkin.domain.usecases.GetProductOfDirectoryByCodeUseCase
 import com.example.savushkin.domain.usecases.GetProductsOfDirectoryUseCase
+import com.example.savushkin.domain.usecases.GetProductsOfRequestUseCase
+import com.example.savushkin.domain.usecases.GetRequestByNumberUseCase
 import com.example.savushkin.domain.usecases.GetStatusRememberEnterUseCase
 import com.example.savushkin.domain.usecases.SetStatusRememberEnterUseCase
 import kotlinx.coroutines.launch
@@ -54,6 +60,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val addRequestsUseCase: AddRequestUseCase
     private val getCountRequestUseCase: GetCountRequestUseCase
     private val addProductInDirectoryUseCase: AddProductInDirectoryUseCase
+    private val getRequestByNumberUseCase: GetRequestByNumberUseCase
+    private val getProductsOfRequestUseCase: GetProductsOfRequestUseCase
+    private val getProductOfDirectoryByCodeUseCase: GetProductOfDirectoryByCodeUseCase
+    private val getCountProductsOfRequestsUseCase: GetCountProductsOfRequestsUseCase
+    private val addProductOfRequestUseCase: AddProductOfRequestUseCase
 
     init {
         val myDao = MyRoom.getDataBase(application).Dao()
@@ -73,6 +84,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         addRequestsUseCase = AddRequestUseCase(myRep = myRep)
         getCountRequestUseCase = GetCountRequestUseCase(myRep = myRep)
         addProductInDirectoryUseCase = AddProductInDirectoryUseCase(myRep = myRep)
+        getRequestByNumberUseCase = GetRequestByNumberUseCase(myRep = myRep)
+        getProductsOfRequestUseCase = GetProductsOfRequestUseCase(myRep = myRep)
+        getProductOfDirectoryByCodeUseCase = GetProductOfDirectoryByCodeUseCase(myRep = myRep)
+        getCountProductsOfRequestsUseCase = GetCountProductsOfRequestsUseCase(myRep = myRep)
+        addProductOfRequestUseCase = AddProductOfRequestUseCase(myRep = myRep)
 
 
         if(getStatusRememberEnterUseCase.execute()) {
@@ -82,12 +98,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         runBlocking {
+            println("DIRECTORY: " + getCountInDirectoryUseCase.execute())
             if(getCountInDirectoryUseCase.execute() == 0) {
                 loadDirectory()
             }
 
+            println("REQUESTS: " + getCountRequestUseCase.execute())
             if(getCountRequestUseCase.execute() == 0) {
                 loadRequests()
+            }
+
+            println("PRODUCTS: " + getCountProductsOfRequestsUseCase.execute())
+            if(getCountProductsOfRequestsUseCase.execute() == 0) {
+                loadProducts()
             }
         }
 
@@ -163,6 +186,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return requestsList
     }
 
+    private fun loadProducts() {
+        viewModelScope.launch {
+            val productsList = getProductsOfRequestsFromXML()
+            productsList.forEach{
+                addProductOfRequestUseCase.execute(it)
+            }
+        }
+    }
+
+    private fun getProductsOfRequestsFromXML() : List<ProductOfRequest> {
+        val xmlFile = "products.xml"
+        val assetManager = getApplication<Application>().assets
+        val inputStream = assetManager.open(xmlFile)
+        val xmlObject = XMLParser.parse(inputStream)
+        val productsList = ArrayList<ProductOfRequest>()
+
+        xmlObject.descendants?.forEach { productObject ->
+            if (productObject.tag == "NPC") {
+                val numberRequest = (productObject.get("SYSNZPL")?.value ?: "").toLong()
+                val codeProduct = productObject.get("KMC")?.value ?: ""
+                val quantity = (productObject.get("KOLM")?.value ?: "").toInt()
+                productsList.add(ProductOfRequest(
+                    codeProduct = codeProduct,
+                    quantity = quantity,
+                    numberRequest = numberRequest
+                ))
+            }
+        }
+        return productsList
+    }
+
     private fun String.formatDate(): String {
         return if (this.length == 8) {
             "${this.substring(0, 2)}.${this.substring(2, 4)}.${this.substring(4, 8)}"
@@ -195,6 +249,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getStatusRememberEnter() : Boolean {
         return stateStatusRememberEnter
+    }
+
+    fun getRequestByNumber(number : Long) : Request {
+        return runBlocking {
+            getRequestByNumberUseCase.execute(number = number)
+        }
+    }
+
+    fun getProductsOfRequest(number: Long) : List<ProductOfRequest> {
+        return runBlocking {
+            getProductsOfRequestUseCase.execute(numberRequest = number)
+        }
+    }
+
+    fun getProductOfDirectoryByCode(code : String) : List<Directory> {
+        return runBlocking {
+            getProductOfDirectoryByCodeUseCase.execute(code = code)
+        }
+
     }
 
     fun setNumberRequest(newNumberRequest : Long) {

@@ -24,8 +24,7 @@ import com.example.savushkin.presentation.directoryPage.ContentForDirectoryPage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestPage(vm : MainViewModel) {
-    // ТУТ Я БУДУ ПОЛУЧАТЬ ОБЪЕКТ КОНКРЕТНОЙ ЗАЯВКИ
-
+    val request = vm.getRequestByNumber(vm.getNumberRequest())
     Scaffold (
         topBar = {
             TopAppBar(
@@ -43,7 +42,7 @@ fun RequestPage(vm : MainViewModel) {
                                 .weight(1f),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = "ЗАЯВКА №1234567", fontSize = 28.sp)
+                            Text(text = "ЗАЯВКА №${request.numberRequest}", fontSize = 28.sp)
                         }
                     }
                 },
@@ -60,7 +59,7 @@ fun RequestPage(vm : MainViewModel) {
                 .padding(innerPadding),
             color = Color(0xFFE6E6E6)
         ) {
-            ContentForRequestPage()
+            ContentForRequestPage(request = request, vm = vm)
         }
 
     }

@@ -45,6 +45,14 @@ class MyRepositoryImpl (
         myDAO.addRequest(request.toData())
     }
 
+    override suspend fun addProductForRequest(product : ProductOfRequest) {
+        myDAO.addProductForRequest(product = product.toData())
+    }
+
+    override suspend fun addProductInDirectory(product: Directory) {
+        myDAO.addProductInDirectory(product.toData())
+    }
+
     override fun getAllRequests() : LiveData<List<Request>> {
         return myDAO.getAllRequests().map {
             it.toDomain()
@@ -55,26 +63,8 @@ class MyRepositoryImpl (
         return myDAO.getRequestByNumber(numberRequest = numberRequest).toDomain()
     }
 
-    override suspend fun updateRequestStatus(numberRequest : Long, newStatusRequest : String) {
-        myDAO.updateRequestStatus(numberRequest = numberRequest, newStatusRequest = newStatusRequest)
-    }
-
-    override suspend fun addProductForRequest(product : ProductOfRequest) {
-        myDAO.addProductForRequest(product = product.toData())
-    }
-
-    override suspend fun updateQuantityOfProduct(
-        codeProduct : String, newQuantity : Double, numberRequest : Long
-    ) {
-        myDAO.updateQuantityOfProduct(
-            codeProduct = codeProduct,
-            newQuantity = newQuantity,
-            numberRequest = numberRequest
-        )
-    }
-
-    override fun getAllProductByRequest(numberRequest : Long) : LiveData<List<ProductOfRequest>> {
-        return myDAO.getAllProductByRequest(numberRequest = numberRequest).map {
+    override suspend fun getAllProductByRequest(numberRequest : Long) : List<ProductOfRequest> {
+        return myDAO.getAllProductsByRequest(numberRequest = numberRequest).map {
             it.toDomain()
         }
     }
@@ -97,15 +87,6 @@ class MyRepositoryImpl (
         return sharedPrefs.getBoolean(KEY_STATUS_REMEMBER_ENTER, false)
     }
 
-    override fun setStatusRememberEnter(newStatus: Boolean) {
-        sharedPrefs.edit {
-            if(sharedPrefs.contains(KEY_STATUS_REMEMBER_ENTER)) {
-                putBoolean(KEY_STATUS_REMEMBER_ENTER, newStatus)
-            }
-            apply()
-        }
-    }
-
     override fun getCorrectLogin(): String {
         return sharedPrefs.getString(KEY_LOGIN, "") ?: ""
     }
@@ -122,7 +103,52 @@ class MyRepositoryImpl (
         return myDAO.getCountRequests()
     }
 
-    override suspend fun addProductInDirectory(product: Directory) {
-        myDAO.addProductInDirectory(product.toData())
+    override suspend fun getCountProductsOfRequests(): Int {
+        return myDAO.getCountProductsOfRequests()
     }
+
+    override suspend fun getProductOfDirectoryByCode(code: String): List<Directory> {
+        return myDAO.getProductOfDirectoryByCode(code = code).map {
+            it.toDomain()
+        }
+    }
+
+
+    override suspend fun updateRequestStatus(numberRequest : Long, newStatusRequest : String) {
+        myDAO.updateRequestStatus(numberRequest = numberRequest, newStatusRequest = newStatusRequest)
+    }
+
+    override suspend fun updateQuantityOfProduct(
+        codeProduct : String, newQuantity : Double, numberRequest : Long
+    ) {
+        myDAO.updateQuantityOfProduct(
+            codeProduct = codeProduct,
+            newQuantity = newQuantity,
+            numberRequest = numberRequest
+        )
+    }
+
+
+    override fun setStatusRememberEnter(newStatus: Boolean) {
+        sharedPrefs.edit {
+            if(sharedPrefs.contains(KEY_STATUS_REMEMBER_ENTER)) {
+                putBoolean(KEY_STATUS_REMEMBER_ENTER, newStatus)
+            }
+            apply()
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,7 +1,6 @@
 package com.example.savushkin.data.mappers
 
 import com.example.savushkin.data.DirectoryEntity
-import com.example.savushkin.data.ProductOfRequestEntity
 import com.example.savushkin.domain.models.Directory
 
 fun DirectoryEntity.toDomain() = Directory(

@@ -1,0 +1,39 @@
+<?xml version="1.0" standalone="yes"?> 
+<BD_NPC> 
+    <NPC> 
+      <SYSNZPL>1</SYSNZPL>
+      <KMC>0101000001</KMC>
+      <KOLM>5</KOLM>
+    </NPC> 
+
+    <NPC> 
+      <SYSNZPL>1</SYSNZPL>
+      <KMC>0101000004</KMC>
+      <KOLM>0</KOLM>
+    </NPC> 
+
+    <NPC> 
+      <SYSNZPL>1</SYSNZPL>
+      <KMC>0101010004</KMC>
+      <KOLM>2</KOLM>
+    </NPC>
+
+    <NPC> 
+      <SYSNZPL>2</SYSNZPL>
+      <KMC>0101010005</KMC>
+      <KOLM>5</KOLM>
+    </NPC> 
+
+    <NPC> 
+      <SYSNZPL>2</SYSNZPL>
+      <KMC>0101000001</KMC>
+      <KOLM>3</KOLM>
+    </NPC> 
+
+    <NPC> 
+      <SYSNZPL>2</SYSNZPL>
+      <KMC>0101030004</KMC>
+      <KOLM>0</KOLM>
+    </NPC>
+
+</BD_NPC> 

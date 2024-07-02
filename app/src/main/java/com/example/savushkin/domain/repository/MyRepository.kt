@@ -21,7 +21,7 @@ interface MyRepository {
 
     suspend fun updateQuantityOfProduct(codeProduct : String, newQuantity : Double, numberRequest : Long)
 
-    fun getAllProductByRequest(numberRequest : Long) : LiveData<List<ProductOfRequest>>
+    suspend fun getAllProductByRequest(numberRequest : Long) : List<ProductOfRequest>
 
     fun getAllProductOfDirectory() : LiveData<List<Directory>>
 
@@ -40,4 +40,8 @@ interface MyRepository {
     suspend fun getCountInDirectory() : Int
 
     suspend fun getCountRequests() : Int
+
+    suspend fun getCountProductsOfRequests() : Int
+
+    suspend fun getProductOfDirectoryByCode(code : String) : List<Directory>
 }
