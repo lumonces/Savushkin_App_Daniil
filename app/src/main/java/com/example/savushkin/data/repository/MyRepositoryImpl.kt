@@ -119,7 +119,7 @@ class MyRepositoryImpl (
     }
 
     override suspend fun updateQuantityOfProduct(
-        codeProduct : String, newQuantity : Double, numberRequest : Long
+        codeProduct : String, newQuantity : Int, numberRequest : Long
     ) {
         myDAO.updateQuantityOfProduct(
             codeProduct = codeProduct,
@@ -138,17 +138,7 @@ class MyRepositoryImpl (
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    override suspend fun deleteAllFromProducts() {
+        myDAO.deleteAllFromProducts()
+    }
 }

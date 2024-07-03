@@ -1,6 +1,7 @@
 package com.example.savushkin.presentation
 
 import android.app.Application
+import android.view.Gravity
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -31,6 +32,9 @@ import com.example.savushkin.domain.usecases.GetProductsOfRequestUseCase
 import com.example.savushkin.domain.usecases.GetRequestByNumberUseCase
 import com.example.savushkin.domain.usecases.GetStatusRememberEnterUseCase
 import com.example.savushkin.domain.usecases.SetStatusRememberEnterUseCase
+import com.example.savushkin.domain.usecases.UpdateQuantityOfProductUseCase
+import com.example.savushkin.domain.usecases.UpdateRequestStatusUseCase
+import com.journeyapps.barcodescanner.ScanIntentResult
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -40,6 +44,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val directoryList : LiveData<List<Directory>>
     private var myRep : MyRepositoryImpl
 
+    private lateinit var currentRequest : Request
+
     // СОСТОЯНИЯ АВТОРИЗАЦИИ
     private var stateLogin by mutableStateOf("")
     private var statePassword by mutableStateOf("")
@@ -47,6 +53,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // СОСТОЯНИЯ ЗАЯВКИ
     private var stateNumberRequest by mutableLongStateOf(0)
+    private var stateStatusAllScan by mutableStateOf(true)
 
     // USECASE-ы
     private val checkAuthUseCase: CheckAuthUseCase
@@ -65,6 +72,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val getProductOfDirectoryByCodeUseCase: GetProductOfDirectoryByCodeUseCase
     private val getCountProductsOfRequestsUseCase: GetCountProductsOfRequestsUseCase
     private val addProductOfRequestUseCase: AddProductOfRequestUseCase
+    private val updateQuantityOfProductUseCase: UpdateQuantityOfProductUseCase
+    private val updateRequestStatusUseCase: UpdateRequestStatusUseCase
 
     init {
         val myDao = MyRoom.getDataBase(application).Dao()
@@ -89,6 +98,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getProductOfDirectoryByCodeUseCase = GetProductOfDirectoryByCodeUseCase(myRep = myRep)
         getCountProductsOfRequestsUseCase = GetCountProductsOfRequestsUseCase(myRep = myRep)
         addProductOfRequestUseCase = AddProductOfRequestUseCase(myRep = myRep)
+        updateQuantityOfProductUseCase = UpdateQuantityOfProductUseCase(myRep = myRep)
+        updateRequestStatusUseCase = UpdateRequestStatusUseCase(myRep = myRep)
 
 
         if(getStatusRememberEnterUseCase.execute()) {
@@ -98,24 +109,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         runBlocking {
-            println("DIRECTORY: " + getCountInDirectoryUseCase.execute())
             if(getCountInDirectoryUseCase.execute() == 0) {
                 loadDirectory()
             }
 
-            println("REQUESTS: " + getCountRequestUseCase.execute())
             if(getCountRequestUseCase.execute() == 0) {
                 loadRequests()
             }
 
-            println("PRODUCTS: " + getCountProductsOfRequestsUseCase.execute())
-            if(getCountProductsOfRequestsUseCase.execute() == 0) {
-                loadProducts()
-            }
+//            if(getCountProductsOfRequestsUseCase.execute() == 0) {
+//
+//            }
+            loadProducts()
         }
 
         requestsList = getAllRequestsUseCase.execute()
         directoryList = getProductsOfDirectoryUseCase.execute()
+
+
     }
 
     private fun loadDirectory() {
@@ -188,6 +199,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun loadProducts() {
         viewModelScope.launch {
+            myRep.deleteAllFromProducts()
             val productsList = getProductsOfRequestsFromXML()
             productsList.forEach{
                 addProductOfRequestUseCase.execute(it)
@@ -225,12 +237,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun checkAuth(navigateToAllRequestsPage : () -> Unit, toast : Toast) {
+    fun checkAuth(navigateToAllRequestsPage : () -> Unit) {
         if(checkAuthUseCase.execute(login = stateLogin, password = statePassword)) {
             setStatusRememberEnterUseCase.execute(stateStatusRememberEnter)
             navigateToAllRequestsPage()
         }
         else {
+            val context = getApplication<Application>().applicationContext
+            val toast = Toast.makeText(context, "Введён неверный Логин и/или Пароль", Toast.LENGTH_SHORT)
+            toast.setGravity(Gravity.BOTTOM, 0, 150)
             toast.show()
         }
     }
@@ -270,6 +285,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
+    fun getStatusAllScan() : Boolean {
+        return stateStatusAllScan
+    }
+
     fun setNumberRequest(newNumberRequest : Long) {
         stateNumberRequest = newNumberRequest
     }
@@ -284,5 +303,50 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setStatusRememberEnter(newStatus : Boolean) {
         stateStatusRememberEnter = newStatus
+    }
+
+    fun setStatusAllScan(newStatus : Boolean) {
+        stateStatusAllScan = newStatus
+    }
+
+    fun setCurrentRequest(request : Request) {
+        currentRequest = request
+    }
+
+    fun scanResult(result : ScanIntentResult) {
+        val context = getApplication<Application>().applicationContext
+        if(result.contents == null) {
+            val toast = Toast.makeText(context, "НИЧЕГО НЕ ПРОСКАНИРОВАНО", Toast.LENGTH_SHORT)
+            toast.setGravity(Gravity.BOTTOM, 0, 0)
+            toast.show()
+        }
+        else {
+            val productsOfRequest = getProductsOfRequest(currentRequest.numberRequest)
+            var isCorrect = false
+            productsOfRequest.forEach {
+                val productOfDirectory = getProductOfDirectoryByCode(it.codeProduct)
+                if(productOfDirectory[0].ean13 == result.contents && it.quantity != 0) {
+                    isCorrect = true
+                    runBlocking {
+                        updateRequestStatusUseCase.execute(
+                            numberRequest = it.numberRequest,
+                            newStatusRequest = "В ПРОЦЕССЕ"
+                        )
+
+                        updateQuantityOfProductUseCase.execute(
+                            codeProduct = it.codeProduct,
+                            newQuantity = it.quantity - 1,
+                            numberRequest = it.numberRequest
+                        )
+                    }
+                }
+            }
+            // 4810268012181
+            if(!isCorrect) {
+                val toast = Toast.makeText(context, "ОШИБКА", Toast.LENGTH_SHORT)
+                toast.setGravity(Gravity.BOTTOM, 0, 0)
+                toast.show()
+            }
+        }
     }
 }

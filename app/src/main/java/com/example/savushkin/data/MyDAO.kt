@@ -45,5 +45,8 @@ interface MyDAO {
     suspend fun updateRequestStatus(numberRequest : Long, newStatusRequest : String)
 
     @Query("UPDATE ProductOfRequest SET quantity = :newQuantity WHERE codeProduct = :codeProduct AND numberRequest = :numberRequest")
-    suspend fun updateQuantityOfProduct(codeProduct : String, newQuantity : Double, numberRequest : Long)
+    suspend fun updateQuantityOfProduct(codeProduct : String, newQuantity : Int, numberRequest : Long)
+
+    @Query("DELETE FROM ProductOfRequest")
+    suspend fun deleteAllFromProducts()
 }

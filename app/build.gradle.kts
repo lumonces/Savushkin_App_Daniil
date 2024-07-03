@@ -52,6 +52,8 @@ android {
 
 dependencies {
 
+    implementation(libs.zxing.android.embedded)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)

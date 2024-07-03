@@ -19,7 +19,7 @@ interface MyRepository {
 
     suspend fun addProductForRequest(product : ProductOfRequest)
 
-    suspend fun updateQuantityOfProduct(codeProduct : String, newQuantity : Double, numberRequest : Long)
+    suspend fun updateQuantityOfProduct(codeProduct : String, newQuantity : Int, numberRequest : Long)
 
     suspend fun getAllProductByRequest(numberRequest : Long) : List<ProductOfRequest>
 
@@ -44,4 +44,6 @@ interface MyRepository {
     suspend fun getCountProductsOfRequests() : Int
 
     suspend fun getProductOfDirectoryByCode(code : String) : List<Directory>
+
+    suspend fun deleteAllFromProducts()
 }

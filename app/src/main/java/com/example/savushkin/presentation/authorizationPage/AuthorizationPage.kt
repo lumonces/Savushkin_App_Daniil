@@ -32,7 +32,6 @@ import com.example.savushkin.presentation.MainViewModel
 
 @Composable
 fun AuthorizationPage(
-    context : Context,
     vm : MainViewModel,
     navigateToAllRequestsPage : () -> Unit
 ) {
@@ -90,9 +89,7 @@ fun AuthorizationPage(
                         .clip(RoundedCornerShape(20.dp))
                         .height(60.dp),
                     onClick = {
-                        val toast = Toast.makeText(context, "Введён неверный Логин и/или Пароль", Toast.LENGTH_SHORT)
-                        toast.setGravity(Gravity.BOTTOM, 0, 0)
-                        vm.checkAuth(navigateToAllRequestsPage, toast)
+                        vm.checkAuth(navigateToAllRequestsPage)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF0088EB),
