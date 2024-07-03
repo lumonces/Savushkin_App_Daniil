@@ -20,40 +20,4 @@
         <NAMESHOP>Green</NAMESHOP>
         <ADDRESS>Гаврилова 16</ADDRESS>
     </ZPL>
-
-    <ZPL>
-        <SYSN>4</SYSN>
-        <DT>22062024</DT>
-        <NAMESHOP>АЛМИ</NAMESHOP>
-        <ADDRESS>г.Брест, Московская 328</ADDRESS>
-    </ZPL>
-
-    <ZPL>
-        <SYSN>5</SYSN>
-        <DT>21062024</DT>
-        <NAMESHOP>Санта</NAMESHOP>
-        <ADDRESS>г.Брест, Советская 34</ADDRESS>
-    </ZPL>
-
-    <ZPL>
-        <SYSN>6</SYSN>
-        <DT>20062024</DT>
-        <NAMESHOP>Светофор</NAMESHOP>
-        <ADDRESS>г.Брест, Краснознаменная 6</ADDRESS>
-    </ZPL>
-
-    <ZPL>
-        <SYSN>7</SYSN>
-        <DT>19062024</DT>
-        <NAMESHOP>Дионис</NAMESHOP>
-        <ADDRESS>г.Брест, пр. Машерова 16</ADDRESS>
-    </ZPL>
-
-    <ZPL>
-        <SYSN>8</SYSN>
-        <DT>18062024</DT>
-        <NAMESHOP>Продукты</NAMESHOP>
-        <ADDRESS>г.Брест, Мицкевича 19</ADDRESS>
-    </ZPL>
-
 </BD_ZPL>

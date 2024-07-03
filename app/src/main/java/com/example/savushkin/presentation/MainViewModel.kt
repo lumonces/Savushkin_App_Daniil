@@ -117,10 +117,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 loadRequests()
             }
 
-//            if(getCountProductsOfRequestsUseCase.execute() == 0) {
-//
-//            }
-            loadProducts()
+            if(getCountProductsOfRequestsUseCase.execute() == 0) {
+                loadProducts()
+            }
+
         }
 
         requestsList = getAllRequestsUseCase.execute()
@@ -199,7 +199,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun loadProducts() {
         viewModelScope.launch {
-            myRep.deleteAllFromProducts()
             val productsList = getProductsOfRequestsFromXML()
             productsList.forEach{
                 addProductOfRequestUseCase.execute(it)

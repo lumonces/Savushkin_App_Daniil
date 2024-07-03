@@ -3,7 +3,7 @@
     <NPC> 
       <SYSNZPL>1</SYSNZPL>
       <KMC>0101000001</KMC>
-      <KOLM>0</KOLM>
+      <KOLM>3</KOLM>
     </NPC> 
 
     <NPC> 
@@ -15,25 +15,25 @@
     <NPC> 
       <SYSNZPL>1</SYSNZPL>
       <KMC>0101010004</KMC>
-      <KOLM>0</KOLM>
+      <KOLM>3</KOLM>
     </NPC>
 
     <NPC> 
       <SYSNZPL>2</SYSNZPL>
       <KMC>0101010005</KMC>
-      <KOLM>0</KOLM>
+      <KOLM>2</KOLM>
     </NPC> 
 
     <NPC> 
       <SYSNZPL>2</SYSNZPL>
       <KMC>0101000001</KMC>
-      <KOLM>0</KOLM>
+      <KOLM>2</KOLM>
     </NPC> 
 
     <NPC> 
       <SYSNZPL>2</SYSNZPL>
       <KMC>0101030004</KMC>
-      <KOLM>0</KOLM>
+      <KOLM>2</KOLM>
     </NPC>
 
 </BD_NPC> 
